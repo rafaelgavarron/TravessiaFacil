@@ -5,11 +5,11 @@ export default function Card({ children }: { children: React.ReactNode }) {
 }
 const styles = StyleSheet.create({
    container: {
-      height: 140,
-      width: 350,
+      // height: 140,
+      // width: 350,
       backgroundColor: "#FFFFFF",
       borderRadius: 8,
       padding: 16,
-      elevation: 4,
+      elevation: 3,
    },
 });

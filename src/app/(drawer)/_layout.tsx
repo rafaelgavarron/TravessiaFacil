@@ -6,7 +6,7 @@ import {
    StyleSheet,
    useWindowDimensions,
 } from "react-native";
-import { useRouter, usePathname, useNavigation } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useMemo } from "react";
@@ -32,7 +32,7 @@ const NAV_ITEMS = [
    },
 ];
 
-function CustomDrawerContent() {
+function CustomDrawerContent({ navigation }: { navigation: any }) {
    const router = useRouter();
    const pathname = usePathname();
    const insets = useSafeAreaInsets();
@@ -44,6 +44,7 @@ function CustomDrawerContent() {
 
    const handleItemPress = (route: string) => {
       router.replace(route as any);
+      navigation.closeDrawer();
    };
 
    return (
@@ -92,7 +93,9 @@ export default function Layout() {
 
    return (
       <Drawer
-         drawerContent={() => <CustomDrawerContent />}
+         drawerContent={(props) => (
+            <CustomDrawerContent navigation={props.navigation} />
+         )}
          screenOptions={{
             drawerStyle: {
                width: isWide ? "40%" : "60%",
@@ -109,7 +112,10 @@ export default function Layout() {
                      <DrawerToggleButton />
                   </View>
                ),
-               headerStyle: { backgroundColor: "#F8F9FA" },
+               headerStyle: {
+                  backgroundColor: "#F8F9FA",
+                  elevation: 9,
+               },
                headerShadowVisible: false,
             }}
          />
