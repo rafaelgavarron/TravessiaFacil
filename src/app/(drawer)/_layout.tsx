@@ -10,11 +10,13 @@ import { useRouter, usePathname, useNavigation } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useMemo, useCallback, memo } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const HEADER_TITLES: Record<string, string> = {
    dashboard: "Travessia Fácil",
    cameras: "Câmeras ao Vivo",
    info: "Tarifas e Informações",
+   config: "Configurações",
 };
 
 // Memoizar DynamicHeaderTitle
@@ -52,14 +54,22 @@ const NAV_ITEMS = [
    {
       label: "Câmeras",
       route: "/(drawer)/(tabs)/cameras" as const,
-      icon: "video" as const,
-      iconFocused: "camera" as const,
+      icon: "videocam-outline" as const,
+      iconFocused: "videocam" as const,
+      iconFamily: "Ionicons" as const,
    },
    {
       label: "Informações",
       route: "/(drawer)/(tabs)/info" as const,
       icon: "information-outline" as const,
       iconFocused: "information" as const,
+   },
+   {
+      label: "Configurações",
+      route: "/(drawer)/(tabs)/config" as const,
+      icon: "settings-outline" as const,
+      iconFocused: "settings-sharp" as const,
+      iconFamily: "Ionicons" as const,
    },
 ];
 
@@ -78,7 +88,7 @@ function CustomDrawerContent({ navigation }: { navigation: any }) {
          router.replace(route as any);
          navigation.closeDrawer();
       },
-      [router, navigation]
+      [router, navigation],
    );
 
    return (
@@ -123,11 +133,19 @@ const NavItem = memo(function NavItem({
          ]}
          onPress={onPress}
       >
-         <MaterialCommunityIcons
-            name={isActive ? item.iconFocused : item.icon}
-            size={24}
-            color={isActive ? "#000A7F" : "#555"}
-         />
+         {item.iconFamily === "Ionicons" ? (
+            <Ionicons
+               name={isActive ? item.iconFocused : item.icon}
+               size={24}
+               color={isActive ? "#000A7F" : "#555"}
+            />
+         ) : (
+            <MaterialCommunityIcons
+               name={isActive ? item.iconFocused : item.icon}
+               size={24}
+               color={isActive ? "#000A7F" : "#555"}
+            />
+         )}
          <Text style={isActive ? styles.navLabelActive : styles.navLabel}>
             {item.label}
          </Text>
@@ -184,6 +202,7 @@ const styles = StyleSheet.create({
       borderBottomColor: "#E0E0E0",
    },
    headerTitle: {
+      marginLeft: 10,
       fontSize: 22,
       fontWeight: "700",
       color: "#1A1A1A",

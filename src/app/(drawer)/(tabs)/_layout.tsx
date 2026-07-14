@@ -63,19 +63,26 @@ export default function TabLayout() {
                ),
             }}
          />
-         <Tabs.Screen
-            name="info"
-            options={{
-               title: "Informações",
-               tabBarIcon: ({ focused }) => (
-                  <MaterialCommunityIcons
-                     name={focused ? "information" : "information-outline"}
-                     size={24}
-                     color={focused ? "#000A7F" : "#555"}
-                  />
-               ),
-            }}
-         />
-      </Tabs>
+          <Tabs.Screen
+             name="info"
+             options={{
+                title: "Informações",
+                tabBarIcon: ({ focused }) => (
+                   <MaterialCommunityIcons
+                      name={focused ? "information" : "information-outline"}
+                      size={24}
+                      color={focused ? "#000A7F" : "#555"}
+                   />
+                ),
+             }}
+          />
+          <Tabs.Screen
+             name="config"
+             options={{
+                title: "Configurações",
+                href: null,
+             }}
+          />
+       </Tabs>
    );
 }
