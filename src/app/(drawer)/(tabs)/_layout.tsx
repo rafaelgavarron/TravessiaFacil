@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { useWindowDimensions, Pressable } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function TabLayout() {
    const { width } = useWindowDimensions();
@@ -54,8 +55,8 @@ export default function TabLayout() {
             options={{
                title: "Câmeras",
                tabBarIcon: ({ focused }) => (
-                  <MaterialCommunityIcons
-                     name={focused ? "camera" : "camera-outline"}
+                  <Ionicons
+                     name={focused ? "videocam" : "videocam-outline"}
                      size={24}
                      color={focused ? "#000A7F" : "#555"}
                   />

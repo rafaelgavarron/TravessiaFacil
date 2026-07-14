@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
    scrollView: {
       paddingHorizontal: 20,
       paddingTop: 10,
-      backgroundColor: "#FFF",
+      backgroundColor: "#F8F9FA",
    },
    dotContainer: {
       flexDirection: "row",

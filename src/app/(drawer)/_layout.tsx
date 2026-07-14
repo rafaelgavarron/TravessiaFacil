@@ -1,4 +1,4 @@
-import { Drawer, DrawerToggleButton } from "expo-router/drawer";
+import { Drawer } from "expo-router/drawer";
 import {
    View,
    Text,
@@ -6,10 +6,41 @@ import {
    StyleSheet,
    useWindowDimensions,
 } from "react-native";
-import { useRouter, usePathname } from "expo-router";
+import { useRouter, usePathname, useNavigation } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useMemo } from "react";
+
+const HEADER_TITLES: Record<string, string> = {
+   dashboard: "Travessia Fácil",
+   cameras: "Câmeras ao Vivo",
+   info: "Tarifas e Informações",
+};
+
+function DynamicHeaderTitle() {
+   const pathname = usePathname();
+   const segment = pathname.split("/").filter(Boolean).pop() ?? "dashboard";
+   return (
+      <Text
+         style={{
+            fontFamily: "Manrope_700Bold",
+            fontSize: 20,
+            color: "#001E40",
+         }}
+      >
+         {HEADER_TITLES[segment] ?? "Travessia Fácil"}
+      </Text>
+   );
+}
+
+function DrawerToggle() {
+   const navigation = useNavigation() as any;
+   return (
+      <Pressable onPress={() => navigation.toggleDrawer()} hitSlop={12}>
+         <MaterialCommunityIcons name="menu" size={24} color="#001E40" />
+      </Pressable>
+   );
+}
 
 const NAV_ITEMS = [
    {
@@ -21,7 +52,7 @@ const NAV_ITEMS = [
    {
       label: "Câmeras",
       route: "/(drawer)/(tabs)/cameras" as const,
-      icon: "camera-outline" as const,
+      icon: "video" as const,
       iconFocused: "camera" as const,
    },
    {
@@ -105,13 +136,14 @@ export default function Layout() {
          <Drawer.Screen
             name="(tabs)"
             options={{
-               title: "Travessia Fácil",
+               headerTitle: () => <DynamicHeaderTitle />,
                headerShown: true,
                headerLeft: () => (
                   <View style={{ paddingLeft: 12 }}>
-                     <DrawerToggleButton />
+                     <DrawerToggle />
                   </View>
                ),
+
                headerStyle: {
                   backgroundColor: "#F8F9FA",
                   elevation: 9,

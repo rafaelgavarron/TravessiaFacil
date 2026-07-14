@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, StyleProp, ViewStyle, ViewProps } from "react-native";
 import Animated, {
    useAnimatedStyle,
    withRepeat,
@@ -35,11 +35,17 @@ export default function Dashboard() {
          false,
       ),
    }));
+   interface CardProps extends ViewProps {
+      children: React.ReactNode;
+      /** Define a cor da barra lateral esquerda de destaque. Se não fornecido, o card será normal. */
+      accentColor?: string;
+      style?: StyleProp<ViewStyle>;
+   }
 
    return (
       <ScrollView
          showsVerticalScrollIndicator={false}
-         style={{ backgroundColor: "#FFF" }}
+         style={{ backgroundColor: "#F8F9FA" }}
       >
          <View
             style={{
