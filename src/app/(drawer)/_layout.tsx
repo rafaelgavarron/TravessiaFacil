@@ -9,7 +9,7 @@ import {
 import { useRouter, usePathname, useNavigation } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useMemo } from "react";
+import { useMemo, useCallback, memo } from "react";
 
 const HEADER_TITLES: Record<string, string> = {
    dashboard: "Travessia Fácil",
@@ -17,30 +17,30 @@ const HEADER_TITLES: Record<string, string> = {
    info: "Tarifas e Informações",
 };
 
-function DynamicHeaderTitle() {
+// Memoizar DynamicHeaderTitle
+const DynamicHeaderTitle = memo(function DynamicHeaderTitle() {
    const pathname = usePathname();
    const segment = pathname.split("/").filter(Boolean).pop() ?? "dashboard";
    return (
-      <Text
-         style={{
-            fontFamily: "Manrope_700Bold",
-            fontSize: 20,
-            color: "#001E40",
-         }}
-      >
+      <Text style={styles.headerTitle}>
          {HEADER_TITLES[segment] ?? "Travessia Fácil"}
       </Text>
    );
-}
+});
 
-function DrawerToggle() {
+// Memoizar DrawerToggle
+const DrawerToggle = memo(function DrawerToggle() {
    const navigation = useNavigation() as any;
+   const handleToggle = useCallback(() => {
+      navigation.toggleDrawer();
+   }, [navigation]);
+
    return (
-      <Pressable onPress={() => navigation.toggleDrawer()} hitSlop={12}>
+      <Pressable onPress={handleToggle} hitSlop={12}>
          <MaterialCommunityIcons name="menu" size={24} color="#001E40" />
       </Pressable>
    );
-}
+});
 
 const NAV_ITEMS = [
    {
@@ -73,10 +73,13 @@ function CustomDrawerContent({ navigation }: { navigation: any }) {
       return seg;
    }, [pathname]);
 
-   const handleItemPress = (route: string) => {
-      router.replace(route as any);
-      navigation.closeDrawer();
-   };
+   const handleItemPress = useCallback(
+      (route: string) => {
+         router.replace(route as any);
+         navigation.closeDrawer();
+      },
+      [router, navigation]
+   );
 
    return (
       <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
@@ -86,37 +89,51 @@ function CustomDrawerContent({ navigation }: { navigation: any }) {
 
          <View style={styles.navList}>
             {NAV_ITEMS.map((item) => {
-               const itemSegment = item.route.split("/").pop() ?? "";
-               const isActive = activeSegment === itemSegment;
+               const itemSegment = item.route.split("/").pop() || "";
                return (
-                  <Pressable
+                  <NavItem
                      key={item.route}
-                     style={({ pressed }) => [
-                        styles.navItem,
-                        isActive && styles.navItemActive,
-                        pressed && styles.navItemPressed,
-                     ]}
+                     item={item}
+                     isActive={activeSegment === itemSegment}
                      onPress={() => handleItemPress(item.route)}
-                  >
-                     <MaterialCommunityIcons
-                        name={isActive ? item.iconFocused : item.icon}
-                        size={24}
-                        color={isActive ? "#000A7F" : "#555"}
-                     />
-                     <Text
-                        style={
-                           isActive ? styles.navLabelActive : styles.navLabel
-                        }
-                     >
-                        {item.label}
-                     </Text>
-                  </Pressable>
+                  />
                );
             })}
          </View>
       </View>
    );
 }
+
+// Memoizar NavItem
+const NavItem = memo(function NavItem({
+   item,
+   isActive,
+   onPress,
+}: {
+   item: (typeof NAV_ITEMS)[number];
+   isActive: boolean;
+   onPress: () => void;
+}) {
+   return (
+      <Pressable
+         style={({ pressed }) => [
+            styles.navItem,
+            isActive && styles.navItemActive,
+            pressed && styles.navItemPressed,
+         ]}
+         onPress={onPress}
+      >
+         <MaterialCommunityIcons
+            name={isActive ? item.iconFocused : item.icon}
+            size={24}
+            color={isActive ? "#000A7F" : "#555"}
+         />
+         <Text style={isActive ? styles.navLabelActive : styles.navLabel}>
+            {item.label}
+         </Text>
+      </Pressable>
+   );
+});
 
 export default function Layout() {
    const { width } = useWindowDimensions();
@@ -170,6 +187,7 @@ const styles = StyleSheet.create({
       fontSize: 22,
       fontWeight: "700",
       color: "#1A1A1A",
+      fontFamily: "Manrope_700Bold",
    },
    navList: {
       paddingTop: 16,

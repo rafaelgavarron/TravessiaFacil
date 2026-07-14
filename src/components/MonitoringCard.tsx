@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, memo } from "react";
 import {
    View,
    Text,
@@ -8,12 +8,17 @@ import {
 } from "react-native";
 
 // 1. O Componente Reaproveitável
-export default function CardMonitoramento({ titulo, listaCameras }: any) {
+function CardMonitoramentoContent({ titulo, listaCameras }: any) {
    // Guarda o índice da câmera selecionada (começa na primeira)
    const [cameraAtiva, setCameraAtiva] = useState(0);
 
    // Obtém os dados da câmera que está ativa no momento
    const cameraAtual = listaCameras[cameraAtiva];
+
+   // Memoizar callback para evitar re-renders dos Pressable filhos
+   const handleCameraPress = useCallback((index: number) => {
+      setCameraAtiva(index);
+   }, []);
 
    return (
       <View style={styles.cardContainer}>
@@ -44,30 +49,58 @@ export default function CardMonitoramento({ titulo, listaCameras }: any) {
             {listaCameras.map((camera: any, index: number) => {
                const isActive = cameraAtiva === index;
                return (
-                  <Pressable
+                  <CameraButton
                      key={index}
-                     onPress={() => setCameraAtiva(index)}
-                     style={({ pressed }) => [
-                        styles.botaoCamera,
-                        isActive ? styles.botaoAtivo : styles.botaoInativo,
-                        { opacity: pressed ? 0.8 : 1 },
-                     ]}
-                  >
-                     <Text
-                        style={[
-                           styles.textoBotao,
-                           isActive ? styles.textoAtivo : styles.textoInativo,
-                        ]}
-                     >
-                        {camera.nome}
-                     </Text>
-                  </Pressable>
+                     isActive={isActive}
+                     nome={camera.nome}
+                     index={index}
+                     onPress={handleCameraPress}
+                  />
                );
             })}
          </View>
       </View>
    );
 }
+
+// Componente memoizado para botão de câmera
+const CameraButton = memo(function CameraButton({
+   isActive,
+   nome,
+   index,
+   onPress,
+}: {
+   isActive: boolean;
+   nome: string;
+   index: number;
+   onPress: (index: number) => void;
+}) {
+   const handlePress = useCallback(() => {
+      onPress(index);
+   }, [index, onPress]);
+
+   return (
+      <Pressable
+         onPress={handlePress}
+         style={({ pressed }) => [
+            styles.botaoCamera,
+            isActive ? styles.botaoAtivo : styles.botaoInativo,
+            { opacity: pressed ? 0.8 : 1 },
+         ]}
+      >
+         <Text
+            style={[
+               styles.textoBotao,
+               isActive ? styles.textoAtivo : styles.textoInativo,
+            ]}
+         >
+            {nome}
+         </Text>
+      </Pressable>
+   );
+});
+
+export default memo(CardMonitoramentoContent);
 
 const styles = StyleSheet.create({
    cardContainer: {

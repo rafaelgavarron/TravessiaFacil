@@ -15,7 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { ComponentProps, useEffect, useState } from "react";
+import { ComponentProps, useEffect, useState, useMemo, useCallback, memo } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FooterCard from "@/components/ui/FooterCard";
@@ -70,34 +70,17 @@ type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 export default function Info() {
    const [isExpanded, setIsExpanded] = useState(false);
-   const displayedData = isExpanded ? tableData : tableData.slice(0, 4);
 
-   const renderItem = ({ item }: { item: TableItem }) => (
-      <Animated.View
-         entering={FadeInDown.duration(300)}
-         exiting={FadeOutUp.duration(200)}
-         style={styles.tariffCardWrapper}
-      >
-         <View style={styles.tariffCard}>
-            <MaterialCommunityIcons
-               name={item.icon}
-               size={32}
-               color="#4A5568"
-               style={styles.tariffIcon}
-            />
-            <Text style={styles.tariffName}>{item.name}</Text>
-            <View style={styles.tariffPricesContainer}>
-               <View style={styles.tariffPriceBox}>
-                  <Text style={styles.tariffPriceLabel}>Dias Úteis</Text>
-                  <Text style={styles.tariffPrice}>{item.priceWeekday}</Text>
-               </View>
-               <View style={styles.tariffPriceBox}>
-                  <Text style={styles.tariffPriceLabel}>Fim de Semana</Text>
-                  <Text style={styles.tariffPrice}>{item.priceWeekend}</Text>
-               </View>
-            </View>
-         </View>
-      </Animated.View>
+   // Memoizar dados exibidos
+   const displayedData = useMemo(
+      () => (isExpanded ? tableData : tableData.slice(0, 4)),
+      [isExpanded]
+   );
+
+   // Memoizar renderItem
+   const renderItem = useCallback(
+      ({ item }: { item: TableItem }) => <TariffCard item={item} />,
+      []
    );
 
    return (
@@ -175,6 +158,37 @@ export default function Info() {
       </ScrollView>
    );
 }
+
+// Memoizar TariffCard
+const TariffCard = memo(function TariffCard({ item }: { item: TableItem }) {
+   return (
+      <Animated.View
+         entering={FadeInDown.duration(300)}
+         exiting={FadeOutUp.duration(200)}
+         style={styles.tariffCardWrapper}
+      >
+         <View style={styles.tariffCard}>
+            <MaterialCommunityIcons
+               name={item.icon}
+               size={32}
+               color="#4A5568"
+               style={styles.tariffIcon}
+            />
+            <Text style={styles.tariffName}>{item.name}</Text>
+            <View style={styles.tariffPricesContainer}>
+               <View style={styles.tariffPriceBox}>
+                  <Text style={styles.tariffPriceLabel}>Dias Úteis</Text>
+                  <Text style={styles.tariffPrice}>{item.priceWeekday}</Text>
+               </View>
+               <View style={styles.tariffPriceBox}>
+                  <Text style={styles.tariffPriceLabel}>Fim de Semana</Text>
+                  <Text style={styles.tariffPrice}>{item.priceWeekend}</Text>
+               </View>
+            </View>
+         </View>
+      </Animated.View>
+   );
+});
 
 const styles = StyleSheet.create({
    imageContainer: {

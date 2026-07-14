@@ -2,6 +2,21 @@ import { Tabs } from "expo-router";
 import { useWindowDimensions, Pressable } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { memo, useCallback } from "react";
+
+// Memoizar TabBarButton
+const TabBarButton = memo(function TabBarButton(props: any) {
+   return (
+      <Pressable
+         onPress={props.onPress}
+         onLongPress={props.onLongPress}
+         style={props.style}
+         accessibilityState={props.accessibilityState}
+      >
+         {props.children}
+      </Pressable>
+   );
+});
 
 export default function TabLayout() {
    const { width } = useWindowDimensions();
@@ -23,16 +38,7 @@ export default function TabLayout() {
             },
             tabBarPosition: isWide ? "top" : "bottom",
             headerShown: false,
-            tabBarButton: (props) => (
-               <Pressable
-                  onPress={props.onPress}
-                  onLongPress={props.onLongPress}
-                  style={props.style}
-                  accessibilityState={props.accessibilityState}
-               >
-                  {props.children}
-               </Pressable>
-            ),
+            tabBarButton: TabBarButton,
          }}
       >
          <Tabs.Screen
