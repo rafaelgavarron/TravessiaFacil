@@ -6,16 +6,10 @@ import {
    ScrollView,
    Pressable,
 } from "react-native";
-import Animated, {
-   FadeInDown,
-   FadeOutUp,
-   useSharedValue,
-   useAnimatedStyle,
-   withTiming,
-} from "react-native-reanimated";
+import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { ComponentProps, useEffect, useState, useMemo, useCallback, memo } from "react";
+import { ComponentProps, useState, useMemo, useCallback, memo } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FooterCard from "@/components/ui/FooterCard";
@@ -49,13 +43,6 @@ const tableData: TableItem[] = [
       priceWeekday: "R$ 19,00",
       priceWeekend: "R$ 28,50",
    },
-   // {
-   //    id: "5",
-   //    icon: require("@/assets/carro-com-trailer"),
-   //    name: "Automóveis \ncom reboque",
-   //    priceWeekday: "R$ 38,00",
-   //    priceWeekend: "R$ 56,90",
-   // },
 ];
 
 type TableItem = {
@@ -74,13 +61,13 @@ export default function Info() {
    // Memoizar dados exibidos
    const displayedData = useMemo(
       () => (isExpanded ? tableData : tableData.slice(0, 4)),
-      [isExpanded]
+      [isExpanded],
    );
 
    // Memoizar renderItem
    const renderItem = useCallback(
       ({ item }: { item: TableItem }) => <TariffCard item={item} />,
-      []
+      [],
    );
 
    return (

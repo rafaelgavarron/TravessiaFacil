@@ -11,6 +11,8 @@ import {
    useFonts,
 } from "@expo-google-fonts/manrope";
 import { DrawerToggleButton } from "expo-router/drawer";
+import { StatusBar } from "expo-status-bar";
+import { NotificationProvider } from "../context/NotificationContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,16 +36,19 @@ export default function RootLayout() {
    }
 
    return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-         <Stack>
-            <Stack.Screen
-               name="(drawer)"
-               options={{
-                  headerLeft: () => <DrawerToggleButton />,
-                  headerShown: false,
-               }}
-            />
-         </Stack>
-      </GestureHandlerRootView>
+      <NotificationProvider>
+         <GestureHandlerRootView style={{ flex: 1 }}>
+            <StatusBar style="auto" />
+            <Stack>
+               <Stack.Screen
+                  name="(drawer)"
+                  options={{
+                     headerLeft: () => <DrawerToggleButton />,
+                     headerShown: false,
+                  }}
+               />
+            </Stack>
+         </GestureHandlerRootView>
+      </NotificationProvider>
    );
 }

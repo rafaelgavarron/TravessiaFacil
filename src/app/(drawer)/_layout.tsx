@@ -11,6 +11,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useMemo, useCallback, memo } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { NotificationBadge } from "../../components/NotificationBadge";
 
 const HEADER_TITLES: Record<string, string> = {
    dashboard: "Travessia Fácil",
@@ -71,6 +72,20 @@ const NAV_ITEMS = [
       iconFocused: "settings-sharp" as const,
       iconFamily: "Ionicons" as const,
    },
+   {
+      label: "Alertas e notificações",
+      route: "/(drawer)/(tabs)/alerts" as const,
+      icon: "notifications-outline" as const,
+      iconFocused: "notifications" as const,
+      iconFamily: "Ionicons" as const,
+   },
+   {
+      label: "Ajuda e Suporte",
+      route: "/(drawer)/(tabs)/about" as const,
+      icon: "help-circle-outline" as const,
+      iconFocused: "help-circle" as const,
+      iconFamily: "MaterialIcons" as const,
+   },
 ];
 
 function CustomDrawerContent({ navigation }: { navigation: any }) {
@@ -93,9 +108,14 @@ function CustomDrawerContent({ navigation }: { navigation: any }) {
 
    return (
       <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+         {/* Left accent bar */}
+         <View style={styles.accent} />
+
          <View style={styles.header}>
             <Text style={styles.headerTitle}>Travessia Fácil</Text>
          </View>
+
+         <View style={styles.separator} />
 
          <View style={styles.navList}>
             {NAV_ITEMS.map((item) => {
@@ -109,6 +129,23 @@ function CustomDrawerContent({ navigation }: { navigation: any }) {
                   />
                );
             })}
+         </View>
+
+         <View style={styles.separator} />
+
+         <View style={styles.footer}>
+            <Pressable
+               style={({ pressed }) => [styles.logoutButton, pressed && styles.navItemPressed]}
+               onPress={() => {
+                  router.replace("/");
+                  navigation.closeDrawer();
+               }}
+            >
+               <MaterialCommunityIcons name="logout" size={20} color="#D1302B" />
+               <Text style={styles.logoutText}>Sair</Text>
+            </Pressable>
+
+            <Text style={styles.versionText}>VERSÃO 1.0.0</Text>
          </View>
       </View>
    );
@@ -124,6 +161,8 @@ const NavItem = memo(function NavItem({
    isActive: boolean;
    onPress: () => void;
 }) {
+   const isAlertsItem = item.label === "Alertas e notificações";
+
    return (
       <Pressable
          style={({ pressed }) => [
@@ -146,9 +185,16 @@ const NavItem = memo(function NavItem({
                color={isActive ? "#000A7F" : "#555"}
             />
          )}
-         <Text style={isActive ? styles.navLabelActive : styles.navLabel}>
-            {item.label}
-         </Text>
+         <View style={styles.labelContainer}>
+            <Text style={isActive ? styles.navLabelActive : styles.navLabel}>
+               {item.label}
+            </Text>
+         </View>
+         {isAlertsItem && (
+            <View style={styles.badgeContainer}>
+               <NotificationBadge size="small" />
+            </View>
+         )}
       </Pressable>
    );
 });
@@ -164,7 +210,7 @@ export default function Layout() {
          )}
          screenOptions={{
             drawerStyle: {
-               width: isWide ? "40%" : "60%",
+               width: isWide ? 320 : 280,
             },
          }}
       >
@@ -193,23 +239,36 @@ export default function Layout() {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: "#F8F9FA",
+      backgroundColor: "#FFFFFF",
+   },
+   accent: {
+      position: "absolute",
+      left: 0,
+      top: 0,
+      bottom: 0,
+      width: 6,
+      backgroundColor: "#0B66D0",
+      borderTopRightRadius: 4,
+      borderBottomRightRadius: 4,
    },
    header: {
       paddingHorizontal: 24,
       paddingBottom: 24,
-      borderBottomWidth: 1,
-      borderBottomColor: "#E0E0E0",
    },
    headerTitle: {
       marginLeft: 10,
-      fontSize: 22,
+      fontSize: 20,
       fontWeight: "700",
       color: "#1A1A1A",
       fontFamily: "Manrope_700Bold",
    },
+   separator: {
+      height: 1,
+      backgroundColor: "#F0F2F5",
+      marginHorizontal: 12,
+   },
    navList: {
-      paddingTop: 16,
+      paddingTop: 8,
       paddingHorizontal: 12,
       gap: 4,
    },
@@ -217,15 +276,19 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       alignItems: "center",
       paddingVertical: 12,
-      paddingHorizontal: 16,
+      paddingLeft: 8,
+      paddingRight: 12,
       borderRadius: 12,
       gap: 12,
    },
    navItemActive: {
-      backgroundColor: "#D5E3FF",
+      backgroundColor: "#F1F6FF",
    },
    navItemPressed: {
       opacity: 0.7,
+   },
+   labelContainer: {
+      flex: 1,
    },
    navLabel: {
       fontFamily: "Manrope_400Regular",
@@ -236,5 +299,36 @@ const styles = StyleSheet.create({
       fontFamily: "Manrope_400Regular",
       fontSize: 16,
       color: "#001E40",
+   },
+   badgeContainer: {
+      justifyContent: "center",
+      alignItems: "center",
+   },
+   footer: {
+      marginTop: "auto",
+      paddingHorizontal: 18,
+      paddingVertical: 18,
+      alignItems: "center",
+   },
+   logoutButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      backgroundColor: "#FFF6F5",
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 12,
+      width: "100%",
+   },
+   logoutText: {
+      color: "#D1302B",
+      fontSize: 16,
+      fontFamily: "Manrope_700Bold",
+   },
+   versionText: {
+      marginTop: 12,
+      color: "#BFC6CF",
+      fontSize: 12,
+      letterSpacing: 1.5,
    },
 });

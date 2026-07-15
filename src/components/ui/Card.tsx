@@ -1,14 +1,20 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, StyleProp, ViewStyle } from "react-native";
 
-export default function Card({ children }: { children: React.ReactNode }) {
-   return <View style={styles.container}>{children}</View>;
+type CardProps = {
+   children: React.ReactNode;
+   style?: StyleProp<ViewStyle>;
+};
+
+export default function Card({ children, style }: CardProps) {
+   return <View style={[styles.container, style]}>{children}</View>;
 }
+
 const styles = StyleSheet.create({
    container: {
       // height: 140,
       // width: 350,
       backgroundColor: "#FFFFFF",
-      borderRadius: 8,
+      borderRadius: 12,
       padding: 16,
       elevation: 3,
    },
