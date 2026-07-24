@@ -6,9 +6,19 @@ import {
    Pressable,
    ImageBackground,
 } from "react-native";
+import type { Camera } from "@/types/camera";
+import { useTheme } from "@/context";
 
-// 1. O Componente Reaproveitável
-function CardMonitoramentoContent({ titulo, listaCameras }: any) {
+interface MonitoringCardProps {
+   titulo: string;
+   listaCameras: Camera[];
+}
+
+function CardMonitoramentoContent({
+   titulo,
+   listaCameras,
+}: MonitoringCardProps) {
+   const { colors } = useTheme();
    // Guarda o índice da câmera selecionada (começa na primeira)
    const [cameraAtiva, setCameraAtiva] = useState(0);
 
@@ -21,32 +31,19 @@ function CardMonitoramentoContent({ titulo, listaCameras }: any) {
    }, []);
 
    return (
-      <View style={styles.cardContainer}>
-         <Text style={styles.titulo}>{titulo}</Text>
+      <View style={[styles.cardContainer, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+         <Text style={[styles.titulo, { color: colors.text }]}>{titulo}</Text>
 
          {/* Container do Vídeo / Transmissão */}
          <ImageBackground
-            source={{ uri: cameraAtual?.videoUrl || "https://placeholder.com" }}
-            style={styles.videoContainer}
+            source={{ uri: cameraAtual?.imageUrl || "https://placeholder.com" }}
+            style={[styles.videoContainer, { backgroundColor: colors.surfaceVariant }]}
             imageStyle={{ borderRadius: 12 }}
-         >
-            {/*<View style={styles.badgeLive}>
-               <Text style={styles.textoLive}>LIVE</Text>
-            </View>*/}
-
-            <Pressable
-               style={({ pressed }) => [
-                  styles.botaoPlay,
-                  { opacity: pressed ? 0.7 : 1 },
-               ]}
-            >
-               <Text style={styles.iconePlay}>▶</Text>
-            </Pressable>
-         </ImageBackground>
+         ></ImageBackground>
 
          {/* Renderização Dinâmica das Câmeras */}
          <View style={styles.containerBotoes}>
-            {listaCameras.map((camera: any, index: number) => {
+            {listaCameras.map((camera, index) => {
                const isActive = cameraAtiva === index;
                return (
                   <CameraButton
@@ -75,6 +72,7 @@ const CameraButton = memo(function CameraButton({
    index: number;
    onPress: (index: number) => void;
 }) {
+   const { colors } = useTheme();
    const handlePress = useCallback(() => {
       onPress(index);
    }, [index, onPress]);
@@ -84,14 +82,16 @@ const CameraButton = memo(function CameraButton({
          onPress={handlePress}
          style={({ pressed }) => [
             styles.botaoCamera,
-            isActive ? styles.botaoAtivo : styles.botaoInativo,
+            isActive
+               ? [styles.botaoAtivo, { backgroundColor: colors.primary, borderColor: colors.primary }]
+               : [styles.botaoInativo, { backgroundColor: colors.surfaceVariant, borderColor: colors.border }],
             { opacity: pressed ? 0.8 : 1 },
          ]}
       >
          <Text
             style={[
                styles.textoBotao,
-               isActive ? styles.textoAtivo : styles.textoInativo,
+               isActive ? [styles.textoAtivo, { color: colors.textOnPrimary }] : [styles.textoInativo, { color: colors.textSecondary }],
             ]}
          >
             {nome}
@@ -104,11 +104,9 @@ export default memo(CardMonitoramentoContent);
 
 const styles = StyleSheet.create({
    cardContainer: {
-      backgroundColor: "#fff",
       borderRadius: 16,
       padding: 16,
       marginBottom: 20,
-      shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
@@ -118,7 +116,6 @@ const styles = StyleSheet.create({
       fontFamily: "Manrope",
       fontSize: 20,
       fontWeight: "semibold",
-      color: "#191C1D",
       marginBottom: 12,
    },
    videoContainer: {
@@ -126,20 +123,17 @@ const styles = StyleSheet.create({
       aspectRatio: 16 / 9,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#e1e1e1",
       marginBottom: 12,
    },
    badgeLive: {
       position: "absolute",
       top: 12,
       left: 12,
-      backgroundColor: "#1e293b",
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 6,
    },
    textoLive: {
-      color: "#fff",
       fontSize: 10,
       fontWeight: "bold",
    },
@@ -152,9 +146,8 @@ const styles = StyleSheet.create({
       alignItems: "center",
    },
    iconePlay: {
-      color: "#fff",
       fontSize: 16,
-      marginLeft: 2, // Ajuste óptico do ícone de play
+      marginLeft: 2,
    },
    containerBotoes: {
       flexDirection: "row",
@@ -167,22 +160,12 @@ const styles = StyleSheet.create({
       borderRadius: 8,
       borderWidth: 1,
    },
-   botaoAtivo: {
-      backgroundColor: "#2e445e",
-      borderColor: "#2e445e",
-   },
-   botaoInativo: {
-      backgroundColor: "#f1f5f9",
-      borderColor: "#e2e8f0",
-   },
+   botaoAtivo: {},
+   botaoInativo: {},
    textoBotao: {
       fontSize: 13,
       fontWeight: "500",
    },
-   textoAtivo: {
-      color: "#fff",
-   },
-   textoInativo: {
-      color: "#475569",
-   },
+   textoAtivo: {},
+   textoInativo: {},
 });

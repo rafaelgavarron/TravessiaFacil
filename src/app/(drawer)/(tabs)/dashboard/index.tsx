@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, StyleProp, ViewStyle, ViewProps } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import Animated, {
    useAnimatedStyle,
    withRepeat,
@@ -11,8 +11,15 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import InfoCard from "@/components/ui/InfoCard";
 import { ScrollView } from "react-native-gesture-handler";
+import { useTerminalData } from "@/hooks/useTerminalData";
+
+import Paralyzed from "./paralyzed";
+import { useTheme } from "@/context";
 
 export default function Dashboard() {
+   const { colors } = useTheme();
+   const { data, loading, error, lastUpdated } = useTerminalData();
+
    const animatedPulse = useAnimatedStyle(() => ({
       transform: [
          {
@@ -35,30 +42,182 @@ export default function Dashboard() {
          false,
       ),
    }));
-   interface CardProps extends ViewProps {
-      children: React.ReactNode;
-      /** Define a cor da barra lateral esquerda de destaque. Se não fornecido, o card será normal. */
-      accentColor?: string;
-      style?: StyleProp<ViewStyle>;
+
+   if (loading) {
+      return (
+         <View
+            style={{
+               flex: 1,
+               justifyContent: "center",
+               alignItems: "center",
+               backgroundColor: colors.background,
+            }}
+         >
+            <ActivityIndicator size="large" color={colors.primary} />
+         </View>
+      );
    }
+
+   if (error || !data) {
+      return (
+         <View
+            style={{
+               flex: 1,
+               justifyContent: "center",
+               alignItems: "center",
+               backgroundColor: colors.background,
+               padding: 24,
+            }}
+         >
+            <MaterialIcons name="cloud-off" size={48} color={colors.danger} />
+            <Text
+               style={{
+                  marginTop: 12,
+                  fontSize: 16,
+                  fontFamily: "Manrope_600SemiBold",
+                  color: colors.text,
+                  textAlign: "center",
+               }}
+            >
+               {error ?? "Sem conexão com o servidor"}
+            </Text>
+         </View>
+      );
+   }
+
+   const terminalData = data;
+
+   if (terminalData.esperaA === 0 && terminalData.esperaB === 0)
+      return <Paralyzed lastUpdated={lastUpdated} />;
+
+   function getFlowInfo(espera: number) {
+      if (espera <= 30 && espera > 0)
+         return {
+            label: "Fluxo Leve",
+            icon: "check-circle-outline",
+            iconColor: colors.successDark,
+            textColor: colors.successDark,
+            badgeBg: colors.successBg,
+            timeColor: colors.primaryDark,
+         } as const;
+      if (espera <= 60 && espera > 30)
+         return {
+            icon: "warning-amber",
+            label: "Fluxo Intenso",
+            iconColor: colors.warning,
+            textColor: colors.warning,
+            badgeBg: colors.warningBg,
+            timeColor: colors.warning,
+         };
+      return {
+         label: "Muito Intenso",
+         icon: "error-outline",
+         iconColor: colors.danger,
+         textColor: colors.danger,
+         badgeBg: colors.dangerBg,
+         timeColor: colors.danger,
+      } as const;
+   }
+
+   function getWeatherInfo(clima: string) {
+      const weatherMap: Record<
+         string,
+         {
+            icon: string;
+            iconLibrary: "MaterialIcons" | "MaterialCommunityIcons";
+            label: string;
+         }
+      > = {
+         "claro-dia": {
+            icon: "sunny",
+            iconLibrary: "MaterialIcons",
+            label: "Céu Limpo",
+         },
+         "claro-noite": {
+            icon: "nights-stay",
+            iconLibrary: "MaterialIcons",
+            label: "Céu Limpo",
+         },
+         "parcialmente-nublado-dia": {
+            icon: "weather-partly-cloudy",
+            iconLibrary: "MaterialCommunityIcons",
+            label: "Parcialmente Nublado",
+         },
+         "parcialmente-nublado-noite": {
+            icon: "weather-night-partly-cloudy",
+            iconLibrary: "MaterialCommunityIcons",
+            label: "Parcialmente Nublado",
+         },
+         parcialmente: {
+            icon: "weather-partly-cloudy",
+            iconLibrary: "MaterialCommunityIcons",
+            label: "Parcialmente Nublado",
+         },
+         "encoberto-dia": {
+            icon: "cloud",
+            iconLibrary: "MaterialIcons",
+            label: "Céu Encoberto",
+         },
+         "encoberto-noite": {
+            icon: "cloud",
+            iconLibrary: "MaterialIcons",
+            label: "Céu Encoberto",
+         },
+         nublado: {
+            icon: "cloud",
+            iconLibrary: "MaterialIcons",
+            label: "Nublado",
+         },
+         "chuva-dia": {
+            icon: "weather-rainy",
+            iconLibrary: "MaterialCommunityIcons",
+            label: "Chuva",
+         },
+         "chuva-noite": {
+            icon: "weather-rainy",
+            iconLibrary: "MaterialCommunityIcons",
+            label: "Chuva",
+         },
+         chuva: {
+            icon: "weather-rainy",
+            iconLibrary: "MaterialCommunityIcons",
+            label: "Chuva",
+         },
+      };
+
+      return (
+         weatherMap[clima] || {
+            icon: "cloud",
+            iconLibrary: "MaterialIcons" as const,
+            label: "Clima Indefinido",
+         }
+      );
+   }
+
 
    return (
       <ScrollView
          showsVerticalScrollIndicator={false}
-         style={{ backgroundColor: "#F8F9FA" }}
+         style={{ backgroundColor: colors.background }}
+         contentContainerStyle={{ paddingHorizontal: 20 }}
       >
-         <View
-            style={{
-               flex: 1,
-               alignSelf: "center",
-            }}
-         >
-            <View style={styles.box}>
+         <View>
+            <View style={[styles.box, { backgroundColor: colors.primary }]}>
                <View style={{ ...styles.boxContent }}>
-                  <Text style={{ ...styles.headerBoxText }}>
+                  <Text
+                     style={[
+                        styles.headerBoxText,
+                        { color: colors.textOnPrimary },
+                     ]}
+                  >
                      BEM-VINDO A BORDO!
                   </Text>
-                  <Text style={{ ...styles.bodyBoxText }}>
+                  <Text
+                     style={[
+                        styles.bodyBoxText,
+                        { color: colors.textOnPrimary },
+                     ]}
+                  >
                      Planeje sua travessia.
                   </Text>
                </View>
@@ -72,13 +231,38 @@ export default function Dashboard() {
                   gap: 65,
                }}
             >
-               <Text style={{ ...styles.atualStatus }}>Status Atual</Text>
-               <View style={styles.badgeContainer}>
+               <Text style={[styles.atualStatus, { color: colors.primary }]}>
+                  Status Atual
+               </Text>
+               <View
+                  style={[
+                     styles.badgeContainer,
+                     {
+                        backgroundColor: colors.successBg,
+                        borderColor: colors.borderLight,
+                     },
+                  ]}
+               >
                   <View style={styles.dotContainer}>
-                     <Animated.View style={[styles.pulseDot, animatedPulse]} />
-                     <View style={styles.solidDot} />
+                     <Animated.View
+                        style={[
+                           styles.pulseDot,
+                           { backgroundColor: colors.success },
+                           animatedPulse,
+                        ]}
+                     />
+                     <View
+                        style={[
+                           styles.solidDot,
+                           { backgroundColor: colors.success },
+                        ]}
+                     />
                   </View>
-                  <Text style={styles.badgeText}>Operação Normal</Text>
+                  <Text
+                     style={[styles.badgeText, { color: colors.successDark }]}
+                  >
+                     Operação Normal
+                  </Text>
                </View>
             </View>
             <View style={{ gap: 16, marginTop: 16 }}>
@@ -88,7 +272,7 @@ export default function Dashboard() {
                         <MaterialCommunityIcons
                            name="sail-boat"
                            size={24}
-                           color="black"
+                           color={colors.text}
                         />
                      </MiniCard>
                      <View style={{ flex: 1 }}>
@@ -96,15 +280,13 @@ export default function Dashboard() {
                            style={{
                               marginTop: 1,
                               marginLeft: 12,
-                              color: "#43474F",
+                              color: colors.textSecondary,
                            }}
                         >
                            SENTIDO
                         </Text>
                         <Text
-                           style={{
-                              ...styles.path,
-                           }}
+                           style={[styles.path, { color: colors.primaryDark }]}
                         >
                            São Sebastião → Ilhabela
                         </Text>
@@ -115,16 +297,45 @@ export default function Dashboard() {
                         ...styles.pathTimeContainer,
                      }}
                   >
-                     <Text style={{ ...styles.pathTime }}>30</Text>
-                     <Text style={{ ...styles.pathTimeText }}>minutos</Text>
-                     <View style={styles.badgeContainerStream}>
-                        <MaterialCommunityIcons
-                           name="check-circle-outline"
+                     <Text
+                        style={{
+                           ...styles.pathTime,
+                           color: getFlowInfo(terminalData.esperaA)
+                              .textColor as any,
+                        }}
+                     >
+                        {terminalData.esperaA}
+                     </Text>
+                     <Text
+                        style={[
+                           styles.pathTimeText,
+                           { color: colors.textSecondary },
+                        ]}
+                     >
+                        minutos
+                     </Text>
+                     <View
+                        style={{
+                           ...styles.badgeContainerStream,
+                           backgroundColor: getFlowInfo(terminalData.esperaA)
+                              .badgeBg,
+                        }}
+                     >
+                        <MaterialIcons
+                           name={getFlowInfo(terminalData.esperaA).icon as any}
                            size={24}
-                           color="#065F46"
+                           color={
+                              getFlowInfo(terminalData.esperaA).iconColor as any
+                           }
                         />
-                        <Text style={{ ...styles.badgeTextStream }}>
-                           Fluxo Leve
+                        <Text
+                           style={{
+                              color: getFlowInfo(terminalData.esperaA)
+                                 .textColor,
+                              ...styles.badgeTextStreamDanger,
+                           }}
+                        >
+                           {getFlowInfo(terminalData.esperaA).label}
                         </Text>
                      </View>
                   </View>
@@ -136,7 +347,7 @@ export default function Dashboard() {
                            <MaterialIcons
                               name="directions-boat"
                               size={24}
-                              color="black"
+                              color={colors.text}
                            />
                         </MiniCard>
                         <View style={{ flex: 1 }}>
@@ -144,15 +355,16 @@ export default function Dashboard() {
                               style={{
                                  marginTop: 1,
                                  marginLeft: 12,
-                                 color: "#43474F",
+                                 color: colors.textSecondary,
                               }}
                            >
                               SENTIDO
                            </Text>
                            <Text
-                              style={{
-                                 ...styles.path,
-                              }}
+                              style={[
+                                 styles.path,
+                                 { color: colors.primaryDark },
+                              ]}
                            >
                               Ilhabela → São Sebastião
                            </Text>
@@ -163,64 +375,137 @@ export default function Dashboard() {
                            ...styles.pathTimeContainer,
                         }}
                      >
-                        <Text style={{ ...styles.pathTimeDanger }}>120</Text>
-                        <Text style={{ ...styles.pathTimeText }}>minutos</Text>
-                        <View style={styles.badgeContainerStreamDanger}>
+                        <Text
+                           style={{
+                              ...styles.pathTimeDanger,
+                              color: getFlowInfo(terminalData.esperaB)
+                                 .textColor as any,
+                           }}
+                        >
+                           {terminalData.esperaB}
+                        </Text>
+                        <Text
+                           style={[
+                              styles.pathTimeText,
+                              { color: colors.textSecondary },
+                           ]}
+                        >
+                           minutos
+                        </Text>
+                        <View
+                           style={{
+                              ...styles.badgeContainerStreamDanger,
+                              backgroundColor: getFlowInfo(terminalData.esperaB)
+                                 .badgeBg,
+                           }}
+                        >
                            <MaterialIcons
-                              name="warning-amber"
+                              name={
+                                 getFlowInfo(terminalData.esperaB).icon as any
+                              }
                               size={24}
-                              color="#93000A"
+                              color={
+                                 getFlowInfo(terminalData.esperaB)
+                                    .iconColor as any
+                              }
                            />
-                           <Text style={{ ...styles.badgeTextStreamDanger }}>
-                              Fluxo Intenso
+                           <Text
+                              style={{
+                                 ...styles.badgeTextStreamDanger,
+                                 color: getFlowInfo(terminalData.esperaB)
+                                    .textColor as any,
+                              }}
+                           >
+                              {getFlowInfo(terminalData.esperaB).label}
                            </Text>
                         </View>
                      </View>
                   </Card>
                </View>
                <InfoCard>
-                  <View style={{ ...styles.InfoCard }}>
+                  <View
+                     style={[
+                        styles.InfoCard,
+                        { backgroundColor: colors.surfaceVariant },
+                     ]}
+                  >
                      <View style={{ ...styles.InfoCardContent }}>
                         <MaterialCommunityIcons
                            name="anchor"
                            size={24}
-                           color="black"
+                           color={colors.text}
                         />
                         <View>
-                           <Text style={{ ...styles.InfoCardTextHeader }}>
+                           <Text
+                              style={[
+                                 styles.InfoCardTextHeader,
+                                 { color: colors.textSecondary },
+                              ]}
+                           >
                               LOGÍSTICA
                            </Text>
-                           <Text style={{ ...styles.InfoCardText }}>
-                              6 Embarcações operando
+                           <Text
+                              style={[
+                                 styles.InfoCardText,
+                                 { color: colors.primaryDark },
+                              ]}
+                           >
+                              {`${terminalData.embarcacoes} Embarcações operando`}
                            </Text>
                         </View>
                      </View>
                      <View
                         style={{ ...styles.InfoCardContent, paddingTop: 16 }}
                      >
-                        <MaterialIcons name="sunny" size={24} color="black" />
-                        <View>
-                           <Text style={{ ...styles.InfoCardTextHeader }}>
-                              CLIMA
-                           </Text>
-                           <Text style={{ ...styles.InfoCardText }}>
-                              Céu Limpo
-                           </Text>
-                        </View>
+                        {(() => {
+                           const weatherInfo = getWeatherInfo(terminalData.clima);
+                           const IconComponent =
+                              weatherInfo.iconLibrary === "MaterialIcons"
+                                 ? MaterialIcons
+                                 : MaterialCommunityIcons;
+
+                           return (
+                              <>
+                                 <IconComponent
+                                    name={weatherInfo.icon as any}
+                                    size={24}
+                                    color={colors.text}
+                                 />
+                                 <View>
+                                    <Text
+                                       style={[
+                                          styles.InfoCardTextHeader,
+                                          { color: colors.textSecondary },
+                                       ]}
+                                    >
+                                       CLIMA
+                                    </Text>
+                                    <Text
+                                       style={[
+                                          styles.InfoCardText,
+                                          { color: colors.primaryDark },
+                                       ]}
+                                    >
+                                       {weatherInfo.label}
+                                    </Text>
+                                 </View>
+                              </>
+                           );
+                        })()}
                      </View>
-                     <View
-                        style={{ ...styles.InfoCardContent, paddingTop: 16 }}
-                     >
-                        <MaterialIcons name="waves" size={24} color="black" />
-                        <View>
-                           <Text style={{ ...styles.InfoCardTextHeader }}>
-                              MARÉ
-                           </Text>
-                           <Text style={{ ...styles.InfoCardText }}>
-                              Maré Calma
-                           </Text>
-                        </View>
-                     </View>
+                     {/*<View
+                         style={{ ...styles.InfoCardContent, paddingTop: 16 }}
+                      >
+                          <MaterialIcons name="waves" size={24} color={colors.text} />
+                         <View>
+                            <Text style={[styles.InfoCardTextHeader, { color: colors.textSecondary }]}>
+                               MARÉ
+                            </Text>
+                            <Text style={[styles.InfoCardText, { color: colors.primaryDark }]}>
+                               Maré Calma
+                            </Text>
+                         </View>
+                      </View>*/}
                   </View>
                </InfoCard>
             </View>
@@ -232,11 +517,9 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
    box: {
       height: 192,
-      width: 350,
+      width: "100%",
       marginTop: 24,
-      alignSelf: "center",
       paddingLeft: 24,
-      backgroundColor: "#003366",
       borderRadius: 12,
    },
    boxContent: {
@@ -245,28 +528,23 @@ const styles = StyleSheet.create({
    headerBoxText: {
       fontSize: 12,
       fontFamily: "Manrope_500Bold",
-      color: "#FFF",
    },
    bodyBoxText: {
       marginTop: -5,
       fontSize: 24,
       fontFamily: "Manrope_700Bold",
-      color: "#FFF",
    },
    atualStatus: {
       fontSize: 20,
       fontFamily: "Manrope_600SemiBold",
-      color: "#003366",
    },
    badgeContainer: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "#EDFBF7",
       borderRadius: 20,
       paddingVertical: 6,
       paddingHorizontal: 12,
       borderWidth: 1,
-      borderColor: "#D2F4EB",
       alignSelf: "flex-start",
    },
    dotContainer: {
@@ -280,25 +558,21 @@ const styles = StyleSheet.create({
       width: 8,
       height: 8,
       borderRadius: 4,
-      backgroundColor: "#10B981",
       position: "absolute",
    },
    pulseDot: {
       width: 8,
       height: 8,
       borderRadius: 4,
-      backgroundColor: "#10B981",
       position: "absolute",
    },
    badgeText: {
-      color: "#064E3B",
       fontSize: 14,
       fontWeight: "500",
    },
    path: {
       marginTop: -6,
       marginLeft: 12,
-      color: "#001E40",
       fontSize: 20,
       fontFamily: "Manrope_600SemiBold",
    },
@@ -313,8 +587,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 12,
       borderRadius: 9999,
       marginLeft: "auto",
-      alignSelf: "baseline",
-      backgroundColor: "#D1FAE5",
+      alignSelf: "auto",
       flexDirection: "row",
       gap: 4,
    },
@@ -324,48 +597,41 @@ const styles = StyleSheet.create({
       borderRadius: 9999,
       marginLeft: "auto",
       alignSelf: "baseline",
-      backgroundColor: "#FFDAD6",
       flexDirection: "row",
       gap: 4,
    },
 
    badgeTextStream: {
-      color: "#065F46",
       fontSize: 14,
       fontFamily: "Manrope_600SemiBold",
    },
    badgeTextStreamDanger: {
-      color: "#93000A",
       fontSize: 14,
       fontFamily: "Manrope_600SemiBold",
    },
    pathTime: {
       marginLeft: 5,
-      color: "#001E40",
       fontSize: 30,
       fontFamily: "Manrope_700Bold",
    },
    pathTimeDanger: {
       marginLeft: 5,
-      color: "#BA1A1A",
       fontSize: 30,
       fontFamily: "Manrope_700Bold",
    },
 
    pathTimeText: {
-      color: "#43474F",
       fontSize: 16,
       fontFamily: "Manrope_600SemiBold",
    },
    InfoCard: {
-      width: 350,
-      height: 192,
-      backgroundColor: "#EBEBEB",
-      // elevation: 4,
+      width: "100%",
+      height: "auto",
       borderRadius: 12,
       marginTop: 8,
       paddingLeft: 16,
       paddingTop: 24,
+      paddingBottom: 24,
       marginBottom: 20,
    },
    InfoCardContent: {
@@ -377,12 +643,9 @@ const styles = StyleSheet.create({
       marginLeft: 16,
       fontFamily: "Manrope_600Bold",
       fontSize: 12,
-      color: "#43474F",
    },
    InfoCardText: {
       marginLeft: 16,
-      // marginTop: 6,
-      color: "#001E40",
       fontFamily: "Manrope_600SemiBold",
       fontSize: 16,
    },

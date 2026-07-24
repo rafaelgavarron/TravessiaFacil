@@ -13,6 +13,8 @@ import { ComponentProps, useState, useMemo, useCallback, memo } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FooterCard from "@/components/ui/FooterCard";
+import { useRouter } from "expo-router";
+import { useTheme } from "@/context";
 
 const tableData: TableItem[] = [
    {
@@ -56,6 +58,8 @@ type TableItem = {
 type IconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 export default function Info() {
+   const router = useRouter();
+   const { colors } = useTheme();
    const [isExpanded, setIsExpanded] = useState(false);
 
    // Memoizar dados exibidos
@@ -72,20 +76,31 @@ export default function Info() {
 
    return (
       <ScrollView
-         style={{ backgroundColor: "#F8F9F9" }}
+         style={{ backgroundColor: colors.background }}
          showsVerticalScrollIndicator={false}
       >
          <View style={{ marginLeft: 20, marginRight: 20 }}>
             <View style={styles.imageContainer}>
                <ImageBackground
                   source={require("@/assets/imagemMar.png")}
-                  style={styles.imageBackground}
+                  style={[
+                     styles.imageBackground,
+                     { backgroundColor: colors.primary },
+                  ]}
                   imageStyle={{ borderRadius: 12 }}
-                  resizeMode="contain"
                >
                   <View style={styles.textContainer}>
-                     <Text style={styles.Headertext}>INFORMAÇÕES OFICIAIS</Text>
-                     <Text style={styles.text}>
+                     <Text
+                        style={[
+                           styles.Headertext,
+                           { color: colors.textOnPrimary },
+                        ]}
+                     >
+                        INFORMAÇÕES OFICIAIS
+                     </Text>
+                     <Text
+                        style={[styles.text, { color: colors.textOnPrimary }]}
+                     >
                         Travessia Segura e Transparente
                      </Text>
                   </View>
@@ -96,10 +111,12 @@ export default function Info() {
                <FontAwesome6
                   name="money-bills"
                   size={24}
-                  color="#001E40"
+                  color={colors.primaryDark}
                   style={{ marginTop: 4 }}
                />
-               <Text style={styles.PriceText}>Tabela de Preços</Text>
+               <Text style={[styles.PriceText, { color: colors.primaryDark }]}>
+                  Tabela de Preços
+               </Text>
             </View>
 
             {/* Grid de Cards */}
@@ -113,27 +130,58 @@ export default function Info() {
                style={{ marginBottom: 12 }}
             />
 
-            <Text style={styles.ObservationText}>
-               * Valores sujeitos a alteração conforme regulamentação vigente.
+            <Text
+               style={[styles.ObservationText, { color: colors.textSecondary }]}
+            >
+               * Valores sujeitos a alteração conforme regulamentação vigente,
+               para mais informações sobre as tarifas, {"\n"}
+               <Pressable
+                  onPress={() => router.push("/(drawer)/(tabs)/taxes")}
+                  accessibilityRole="link"
+                  accessibilityLabel="Ver mais informações sobre tarifas"
+               >
+                  <Text
+                     style={[styles.ObservationText, { color: colors.accent }]}
+                  >
+                     clique aqui
+                  </Text>
+               </Pressable>
             </Text>
             <View style={styles.footerContainer}>
-               <Feather name="clock" size={20} color="#001E40" />
-               <Text style={styles.footerHeaderText}>Funcionamento</Text>
+               <Feather name="clock" size={20} color={colors.primaryDark} />
+               <Text
+                  style={[styles.footerHeaderText, { color: colors.primary }]}
+               >
+                  Funcionamento
+               </Text>
             </View>
-            <FooterCard style={styles.footerCard} accentColor="#001E40">
-               <Text style={styles.footerText}>
+            <FooterCard
+               style={styles.footerCard}
+               accentColor={colors.primaryDark}
+            >
+               <Text style={[styles.footerText, { color: colors.text }]}>
                   Operação 24 horas por dia, 7 dias por semana.
                </Text>
-               <View style={styles.footerMiniCard}>
+               <View
+                  style={[
+                     styles.footerMiniCard,
+                     { backgroundColor: colors.infoBg },
+                  ]}
+               >
                   <View>
                      <View style={styles.footerMiniCardContent}>
                         <MaterialIcons
                            name="info-outline"
                            size={24}
-                           color="black"
+                           color={colors.text}
                            style={styles.footerMiniCardIcon}
                         />
-                        <Text style={styles.footerMiniCardText}>
+                        <Text
+                           style={[
+                              styles.footerMiniCardText,
+                              { color: colors.text },
+                           ]}
+                        >
                            Saídas a cada 30 minutos em condições normais de
                            navegação e clima. E de 1 em 1h durante a madrugada.
                         </Text>
@@ -148,28 +196,72 @@ export default function Info() {
 
 // Memoizar TariffCard
 const TariffCard = memo(function TariffCard({ item }: { item: TableItem }) {
+   const { colors } = useTheme();
    return (
       <Animated.View
          entering={FadeInDown.duration(300)}
          exiting={FadeOutUp.duration(200)}
          style={styles.tariffCardWrapper}
       >
-         <View style={styles.tariffCard}>
+         <View
+            style={[
+               styles.tariffCard,
+               {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  shadowColor: colors.shadow,
+               },
+            ]}
+         >
             <MaterialCommunityIcons
                name={item.icon}
                size={32}
-               color="#4A5568"
+               color={colors.textSecondary}
                style={styles.tariffIcon}
             />
-            <Text style={styles.tariffName}>{item.name}</Text>
+            <Text style={[styles.tariffName, { color: colors.text }]}>
+               {item.name}
+            </Text>
             <View style={styles.tariffPricesContainer}>
-               <View style={styles.tariffPriceBox}>
-                  <Text style={styles.tariffPriceLabel}>Dias Úteis</Text>
-                  <Text style={styles.tariffPrice}>{item.priceWeekday}</Text>
+               <View
+                  style={[
+                     styles.tariffPriceBox,
+                     { backgroundColor: colors.surfaceVariant },
+                  ]}
+               >
+                  <Text
+                     style={[
+                        styles.tariffPriceLabel,
+                        { color: colors.textSecondary },
+                     ]}
+                  >
+                     Dias Úteis
+                  </Text>
+                  <Text
+                     style={[styles.tariffPrice, { color: colors.primaryDark }]}
+                  >
+                     {item.priceWeekday}
+                  </Text>
                </View>
-               <View style={styles.tariffPriceBox}>
-                  <Text style={styles.tariffPriceLabel}>Fim de Semana</Text>
-                  <Text style={styles.tariffPrice}>{item.priceWeekend}</Text>
+               <View
+                  style={[
+                     styles.tariffPriceBox,
+                     { backgroundColor: colors.surfaceVariant },
+                  ]}
+               >
+                  <Text
+                     style={[
+                        styles.tariffPriceLabel,
+                        { color: colors.textSecondary },
+                     ]}
+                  >
+                     Fim de Semana
+                  </Text>
+                  <Text
+                     style={[styles.tariffPrice, { color: colors.primaryDark }]}
+                  >
+                     {item.priceWeekend}
+                  </Text>
                </View>
             </View>
          </View>
@@ -180,29 +272,24 @@ const TariffCard = memo(function TariffCard({ item }: { item: TableItem }) {
 const styles = StyleSheet.create({
    imageContainer: {
       height: 128,
-      width: 350,
+      width: "100%",
       marginTop: 24,
-      alignSelf: "center",
-      marginRight: 17,
    },
    textContainer: {
       padding: 24,
    },
    imageBackground: {
-      backgroundColor: "#003366",
       height: "100%",
       width: "100%",
       borderRadius: 12,
    },
    Headertext: {
       fontFamily: "Manrope_600Bold",
-      color: "#fff",
       fontSize: 13,
       alignSelf: "flex-start",
       marginTop: 8,
    },
    text: {
-      color: "#fff",
       fontSize: 20,
       alignSelf: "flex-start",
       marginRight: 90,
@@ -221,15 +308,12 @@ const styles = StyleSheet.create({
    },
    PriceText: {
       fontFamily: "Manrope_600SemiBold",
-      color: "#001E40",
       fontSize: 20,
       marginLeft: 13,
    },
    card: {
-      backgroundColor: "#F7F9FA",
       borderRadius: 8,
       overflow: "hidden",
-      shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 3,
@@ -241,14 +325,11 @@ const styles = StyleSheet.create({
       justifyContent: "space-between",
       paddingHorizontal: 20,
       paddingVertical: 16,
-      backgroundColor: "#F3F4F5",
       borderBottomWidth: 1,
-      borderBottomColor: "#D2D6DC",
    },
    headerText: {
       fontSize: 12,
       fontWeight: "600",
-      color: "#4A5568",
       letterSpacing: 0.5,
    },
    row: {
@@ -267,17 +348,14 @@ const styles = StyleSheet.create({
    },
    categoryText: {
       fontSize: 16,
-      color: "#1A202C",
    },
    priceText: {
       fontSize: 18,
       width: 90,
       fontWeight: "bold",
-      color: "#0D2B45",
    },
    separator: {
       height: 1,
-      backgroundColor: "#E2E8F0",
    },
    TariffContainer: {
       flexDirection: "row",
@@ -285,15 +363,12 @@ const styles = StyleSheet.create({
       gap: 25,
       paddingHorizontal: 20,
       paddingVertical: 16,
-      backgroundColor: "#F3F4F5",
       borderBottomWidth: 1,
-      borderBottomColor: "#D2D6DC",
    },
    TariffText: {
       fontFamily: "Manrope",
       fontSize: 12,
       fontWeight: "700",
-      color: "#4A5568",
       letterSpacing: 0.5,
    },
    TariffTextWeekend: {
@@ -302,7 +377,6 @@ const styles = StyleSheet.create({
       fontFamily: "Manrope",
       fontSize: 12,
       fontWeight: "700",
-      color: "#4A5568",
       letterSpacing: 0.5,
    },
    listContainer: {
@@ -318,16 +392,13 @@ const styles = StyleSheet.create({
    },
    tariffCard: {
       flex: 1,
-      backgroundColor: "#FFF",
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: "#D2D6DC",
       justifyContent: "center",
       alignItems: "center",
       paddingVertical: 16,
       paddingHorizontal: 12,
       elevation: 1,
-      shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
       shadowRadius: 2,
@@ -338,7 +409,6 @@ const styles = StyleSheet.create({
    tariffName: {
       fontSize: 14,
       fontWeight: "600",
-      color: "#1A202C",
       textAlign: "center",
       marginBottom: 12,
       fontFamily: "Manrope_600SemiBold",
@@ -348,7 +418,6 @@ const styles = StyleSheet.create({
       gap: 8,
    },
    tariffPriceBox: {
-      backgroundColor: "#F3F4F5",
       borderRadius: 8,
       paddingVertical: 8,
       paddingHorizontal: 10,
@@ -356,7 +425,6 @@ const styles = StyleSheet.create({
    },
    tariffPriceLabel: {
       fontSize: 11,
-      color: "#4A5568",
       fontWeight: "600",
       marginBottom: 4,
       fontFamily: "Manrope",
@@ -364,14 +432,12 @@ const styles = StyleSheet.create({
    tariffPrice: {
       fontSize: 16,
       fontWeight: "bold",
-      color: "#0D2B45",
       fontFamily: "Manrope_600SemiBold",
    },
    ObservationText: {
       textAlign: "center",
       fontFamily: "Manrope_500SemiBold",
       fontSize: 12,
-      color: "#4A5568",
       letterSpacing: 0.5,
    },
    footerContainer: {
@@ -383,16 +449,14 @@ const styles = StyleSheet.create({
    footerHeaderText: {
       fontSize: 20,
       fontFamily: "Manrope_600SemiBold",
-      color: "#003366",
       fontWeight: "600",
    },
    footerCard: {
       marginTop: 16,
-      width: 350,
-      height: 226,
+      width: "100%",
+      height: 213,
       paddingVertical: 23,
       paddingHorizontal: 24,
-      backgroundColor: "#FFF",
       borderRadius: 12,
       elevation: 1,
       marginBottom: 24,
@@ -400,30 +464,25 @@ const styles = StyleSheet.create({
    footerText: {
       fontSize: 15,
       fontFamily: "Manrope_400Regular",
-      color: "#191C1D",
    },
    footerMiniCard: {
       marginTop: 16,
-      width: 298,
+      width: "100%",
       height: 104,
-      backgroundColor: "#DBE3EA",
       borderRadius: 12,
    },
    footerMiniCardContent: {
       flexDirection: "row",
       alignItems: "baseline",
    },
-
    footerMiniCardIcon: {
       paddingTop: 10,
       paddingLeft: 16,
    },
    footerMiniCardText: {
       marginLeft: 10,
-      marginRight: 26,
-      width: 250,
-      fontSize: 13.5,
+      flex: 1,
+      fontSize: 16,
       fontFamily: "Manrope_400Regular",
-      color: "#191C1D",
    },
 });

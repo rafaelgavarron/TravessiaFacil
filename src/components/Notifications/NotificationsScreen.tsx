@@ -9,6 +9,7 @@ import {
 import { NotificationList } from "./NotificationList";
 import { MOCK_NOTIFICATIONS } from "@/constants/mockNotifications";
 import { Notification } from "@/types/notification";
+import { useTheme } from "@/context";
 
 /**
  * Exemplo de tela que usa os componentes de notificação.
@@ -31,6 +32,7 @@ import { Notification } from "@/types/notification";
  */
 
 export const NotificationsScreen: React.FC = () => {
+   const { colors } = useTheme();
    const [notifications, setNotifications] =
       useState<Notification[]>(MOCK_NOTIFICATIONS);
    const [refreshing, setRefreshing] = useState(false);
@@ -50,10 +52,10 @@ export const NotificationsScreen: React.FC = () => {
    };
 
    return (
-      <View style={styles.container}>
-         <View style={styles.header}>
-            <Text style={styles.headerTitle}>Notificações</Text>
-            <Text style={styles.headerSubtitle}>Status da travessia</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+         <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Notificações</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>Status da travessia</Text>
          </View>
 
          <ScrollView
@@ -77,24 +79,19 @@ export const NotificationsScreen: React.FC = () => {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      backgroundColor: "#F9FAFB",
    },
    header: {
-      backgroundColor: "#FFFFFF",
       paddingHorizontal: 16,
       paddingVertical: 16,
       paddingTop: 12,
       borderBottomWidth: 1,
-      borderBottomColor: "#E5E7EB",
    },
    headerTitle: {
       fontSize: 24,
       fontWeight: "700",
-      color: "#1F2937",
    },
    headerSubtitle: {
       fontSize: 14,
-      color: "#6B7280",
       marginTop: 4,
    },
 });

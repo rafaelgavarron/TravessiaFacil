@@ -6,6 +6,7 @@ import {
    StyleProp,
    ViewStyle,
 } from "react-native";
+import { useTheme } from "@/context";
 
 // 1. Tipagem forte e extensível
 interface CardProps extends ViewProps {
@@ -21,10 +22,12 @@ export default function FooterCard({
    style,
    ...rest
 }: CardProps) {
+   const { colors } = useTheme();
    return (
       <View
          style={[
             styles.container,
+            { backgroundColor: colors.surface, shadowColor: colors.shadow },
             // 2. Aplicação condicional do estilo
             accentColor
                ? { borderLeftWidth: 6, borderLeftColor: accentColor }
@@ -40,12 +43,10 @@ export default function FooterCard({
 
 const styles = StyleSheet.create({
    container: {
-      backgroundColor: "#FFFFFF",
       borderRadius: 8,
       padding: 16,
       elevation: 3,
       // Sombra para iOS (boa prática manter consistência cross-platform)
-      shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 3,

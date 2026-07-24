@@ -1,0 +1,3 @@
+  "clima": "parcialmente-nublado-dia",
+  "clima": "encoberto-dia",
+  "clima": "parcialmente-nublado"

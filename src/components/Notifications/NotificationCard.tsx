@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Notification, NOTIFICATION_CONFIG } from "@/types/notification";
+import { useTheme } from "@/context";
 
 interface NotificationCardProps {
    notification: Notification;
@@ -10,10 +11,11 @@ interface NotificationCardProps {
 export const NotificationCard: React.FC<NotificationCardProps> = ({
    notification,
 }) => {
+   const { colors } = useTheme();
    const config = NOTIFICATION_CONFIG[notification.type];
 
    return (
-      <View style={[styles.container, { borderLeftColor: config.color }]}>
+      <View style={[styles.container, { backgroundColor: colors.surface, borderLeftColor: config.color }]}>
          <View style={styles.header}>
             <View
                style={[
@@ -40,13 +42,13 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
                <Text style={[styles.category, { color: config.color }]}>
                   {notification.category.toUpperCase()}
                </Text>
-               <Text style={styles.time}>{notification.time}</Text>
+               <Text style={[styles.time, { color: colors.textMuted }]}>{notification.time}</Text>
             </View>
          </View>
 
          <View style={styles.content}>
-            <Text style={styles.title}>{notification.title}</Text>
-            <Text style={styles.description}>{notification.description}</Text>
+            <Text style={[styles.title, { color: colors.text }]}>{notification.title}</Text>
+            <Text style={[styles.description, { color: colors.textSecondary }]}>{notification.description}</Text>
          </View>
       </View>
    );
@@ -54,7 +56,6 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
 
 const styles = StyleSheet.create({
    container: {
-      backgroundColor: "#FFFFFF",
       borderRadius: 8,
       borderLeftWidth: 4,
       padding: 16,
@@ -84,7 +85,6 @@ const styles = StyleSheet.create({
    },
    time: {
       fontSize: 12,
-      color: "#9CA3AF",
       fontWeight: "500",
    },
    content: {
@@ -93,12 +93,10 @@ const styles = StyleSheet.create({
    title: {
       fontSize: 16,
       fontWeight: "600",
-      color: "#1F2937",
       marginBottom: 4,
    },
    description: {
       fontSize: 14,
-      color: "#6B7280",
       lineHeight: 20,
    },
 });

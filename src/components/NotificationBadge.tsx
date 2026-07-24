@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useNotifications } from "../context/NotificationContext";
+import { useTheme } from "@/context";
 
 interface NotificationBadgeProps {
   size?: "small" | "medium" | "large";
@@ -8,10 +9,11 @@ interface NotificationBadgeProps {
 
 export function NotificationBadge({ size = "small" }: NotificationBadgeProps) {
   const { unreadCount } = useNotifications();
+  const { colors } = useTheme();
 
   const styles = useMemo(
-    () => getStyles(size),
-    [size]
+    () => getStyles(size, colors),
+    [size, colors]
   );
 
   if (unreadCount === 0) {
@@ -29,7 +31,7 @@ export function NotificationBadge({ size = "small" }: NotificationBadgeProps) {
   );
 }
 
-function getStyles(size: "small" | "medium" | "large") {
+function getStyles(size: "small" | "medium" | "large", colors: { danger: string; textOnPrimary: string }) {
   const sizeConfig = {
     small: {
       width: 20,
@@ -58,13 +60,13 @@ function getStyles(size: "small" | "medium" | "large") {
       width: config.width,
       height: config.height,
       borderRadius: config.width / 2,
-      backgroundColor: "#FF3B30",
+      backgroundColor: colors.danger,
       justifyContent: "center",
       alignItems: "center",
       padding: config.padding,
     },
     badgeText: {
-      color: "#FFF",
+      color: colors.textOnPrimary,
       fontSize: config.fontSize,
       fontWeight: "700",
       fontFamily: "Manrope_700Bold",

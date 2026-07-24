@@ -1,0 +1,20 @@
+{
+  "id": 1950,
+  "terminalA": "SÃO SEBASTIÃO",
+  "terminalB": "ILHABELA",
+  "esperaA": 30,
+  "esperaB": 30,
+  "embarcacoes": 6,
+  "clima": "encoberto-dia",
+  "cameras": {
+    "camA1": "https://dhapp3.azurewebsites.net/cameras/imagens/saosebastiao5.jpg?_=240720261356",
+    "camA2": "https://dhapp3.azurewebsites.net/cameras/imagens/saosebastiao2.jpg?_=240720261356",
+    "camB4": "https://dhapp3.azurewebsites.net/cameras/imagens/ilhabela4.jpg?_=240720261356",
+    "camA5": "https://dhapp3.azurewebsites.net/cameras/imagens/saosebastiao3.jpg?_=240720261356",
+    "camA3": "https://dhapp3.azurewebsites.net/cameras/imagens/saosebastiao.jpg?_=240720261356",
+    "camB3": "https://dhapp3.azurewebsites.net/cameras/imagens/ilhabela2.jpg?_=240720261356",
+    "camA4": "https://dhapp3.azurewebsites.net/cameras/imagens/saosebastiao4.jpg?_=240720261356",
+    "camB1": "https://dhapp3.azurewebsites.net/cameras/imagens/ilhabela3.jpg?_=240720261356",
+    "camB2": "https://dhapp3.azurewebsites.net/cameras/imagens/ilhabela.jpg?_=240720261356"
+  }
+}

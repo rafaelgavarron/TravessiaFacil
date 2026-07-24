@@ -1,0 +1,72 @@
+// import fs from "fs";
+// import * as cheerio from "cheerio";
+
+// const TRAVESSIA_URL =
+//    "https://semil.sp.gov.br/travessias/travessias-automoveis/sao-sebastiao-ilhabela/";
+// const BASE_CAMERA_URL = "https://dhapp3.azurewebsites.net/cameras/";
+// const TRAVESSIA_ID = 1950;
+
+// async function resolveCameraUrl(iframeSrc: string): Promise<string> {
+//    const cameraPageUrl = iframeSrc.startsWith("http")
+//       ? iframeSrc
+//       : `${BASE_CAMERA_URL}${iframeSrc}`;
+//    const response = await fetch(cameraPageUrl);
+//    const html = await response.text();
+//    const $ = cheerio.load(html);
+//    const imgSrc = $("img#fotocam").attr("src");
+//    if (!imgSrc) throw new Error(`Imagem não encontrada em ${cameraPageUrl}`);
+//    return new URL(imgSrc, BASE_CAMERA_URL).href;
+// }
+
+// const response = await fetch(TRAVESSIA_URL);
+// const html = await response.text();
+// const $ = cheerio.load(html);
+
+// const terminals = ["a", "b"] as const;
+// const maxCameras = 5;
+
+// const cameraEntries: [string, string][] = [];
+
+// for (const t of terminals) {
+//    for (let i = 1; i <= maxCameras; i++) {
+//       const iframeSrc = $(`iframe#cam_${t}${i}`).attr("src");
+//       if (!iframeSrc) continue;
+//       const key = `cam${t.toUpperCase()}${i}`;
+//       cameraEntries.push([key, iframeSrc]);
+//    }
+// }
+
+// console.log(`Encontradas ${cameraEntries.length} câmeras. Resolvendo URLs...`);
+
+// const cameraUrls: Record<string, string> = {};
+
+// await Promise.all(
+//    cameraEntries.map(async ([key, iframeSrc]) => {
+//       try {
+//          const url = await resolveCameraUrl(iframeSrc);
+//          cameraUrls[key] = url;
+//          console.log(`  ✓ ${key}: ${url}`);
+//       } catch (err) {
+//          console.error(`  ✗ ${key}: falhou (${err})`);
+//       }
+//    }),
+// );
+
+// const data = {
+//    id: TRAVESSIA_ID,
+//    terminalA: $(`#menu-travessia-a-${TRAVESSIA_ID}`).text().trim(),
+//    terminalB: $(`#menu-travessia-b-${TRAVESSIA_ID}`).text().trim(),
+//    esperaA: parseInt($(`#menu-travMinutosA-${TRAVESSIA_ID}`).text().trim()),
+//    esperaB: parseInt($(`#menu-travMinutosB-${TRAVESSIA_ID}`).text().trim()),
+//    embarcacoes: parseInt(
+//       $(`#menu-embarcacao-${TRAVESSIA_ID} .num`).text().trim(),
+//    ),
+//    clima:
+//       $(`#menu-tempoClima-${TRAVESSIA_ID}`)
+//          .attr("class")
+//          ?.replace("minitrav-", "") ?? "",
+//    cameras: cameraUrls,
+// };
+
+// fs.writeFileSync("data/time.json", JSON.stringify(data, null, 2));
+// console.log(`\nDados gravados em data/time.json (${Object.keys(cameraUrls).length} câmeras)`);

@@ -12,47 +12,63 @@ import { Switch } from "react-native-gesture-handler";
 import { useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTheme } from "@/context";
 
 export default function Config() {
-   const [darkMode, setDarkMode] = useState(false);
+   const { isDark, setDarkMode, colors } = useTheme();
    const [notifications, setNotifications] = useState(false);
-   const fecharAplicativo = () => {
-      Alert.alert(
-         "Sair do App",
-         "Tem certeza que deseja fechar o aplicativo?",
-         [
-            {
-               text: "Não",
-               onPress: () => null,
-               style: "cancel",
-            },
-            {
-               text: "Sim",
-               onPress: () => BackHandler.exitApp(),
-            },
-         ],
-      );
-   };
+   // const fecharAplicativo = () => {
+   //    Alert.alert(
+   //       "Sair do App",
+   //       "Tem certeza que deseja fechar o aplicativo?",
+   //       [
+   //          {
+   //             text: "Não",
+   //             onPress: () => null,
+   //             style: "cancel",
+   //          },
+   //          {
+   //             text: "Sim",
+   //             onPress: () => BackHandler.exitApp(),
+   //          },
+   //       ],
+   //    );
+   // };
    return (
-      <View style={styles.container}>
-         <Text style={styles.title}>PREFERÊNCIAS</Text>
+      <View
+         style={[
+            styles.container,
+            { backgroundColor: colors.background, flex: 1 },
+         ]}
+      >
+         <Text style={[styles.title, { color: colors.textMuted }]}>
+            PREFERÊNCIAS
+         </Text>
          <Card>
             <View style={styles.cardContent}>
                <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Feather
                      name="moon"
                      size={24}
-                     color="#001E40"
+                     color={colors.primaryDark}
                      style={{ marginRight: 8 }}
                   />
-                  <Text>Modo Escuro</Text>
+                  <Text style={{ color: colors.text }}>Modo Escuro</Text>
                </View>
-               <Switch value={darkMode} onValueChange={setDarkMode} />
+               <Switch
+                  value={isDark}
+                  onValueChange={setDarkMode}
+                  trackColor={{
+                     false: colors.switchTrack,
+                     true: colors.primary,
+                  }}
+                  thumbColor={colors.switchThumb}
+               />
             </View>
          </Card>
-         <View>
-            <Text style={styles.title}>NOTIFICAÇÕES</Text>
-            <Card>
+         {/*<View>*/}
+         {/*<Text style={styles.title}>NOTIFICAÇÕES</Text>*/}
+         {/*<Card>
                <View style={styles.cardContent}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                      <MaterialIcons
@@ -73,22 +89,35 @@ export default function Config() {
                      onValueChange={setNotifications}
                   />
                </View>
-            </Card>
-         </View>
+            </Card>*/}
+         {/*</View>*/}
          <View>
-            <Text style={styles.title}>SOBRE</Text>
+            <Text style={[styles.title, { color: colors.textMuted }]}>
+               SOBRE
+            </Text>
             <Card>
-               <View style={styles.aboutCardContent}>
+               <View
+                  style={[
+                     styles.aboutCardContent,
+                     { borderBottomColor: colors.border },
+                  ]}
+               >
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                      <MaterialIcons
                         name="info-outline"
                         size={24}
-                        color="black"
+                        color={colors.text}
                         style={{ marginRight: 8 }}
                      />
-                     <Text style={styles.aboutText}>Termos e Privacidade</Text>
+                     <Text style={[styles.aboutText, { color: colors.text }]}>
+                        Termos e Privacidade
+                     </Text>
                   </View>
-                  <MaterialIcons name="open-in-new" size={24} color="black" />
+                  <MaterialIcons
+                     name="open-in-new"
+                     size={24}
+                     color={colors.text}
+                  />
                </View>
                <View
                   style={{
@@ -107,19 +136,26 @@ export default function Config() {
                      <MaterialCommunityIcons
                         name="check-decagram-outline"
                         size={24}
-                        color="black"
+                        color={colors.text}
                         style={{ marginRight: 8 }}
                      />
-                     <Text style={styles.aboutText}>Versão</Text>
+                     <Text style={[styles.aboutText, { color: colors.text }]}>
+                        Versão
+                     </Text>
                   </View>
-                  <Text style={styles.versionText}> v1.0.0</Text>
+                  <Text
+                     style={[styles.versionText, { color: colors.textMuted }]}
+                  >
+                     {" "}
+                     v1.0.0
+                  </Text>
                </View>
             </Card>
          </View>
          <View>
-            <Pressable style={styles.button} onPress={fecharAplicativo}>
+            {/*<Pressable style={styles.button} onPress={fecharAplicativo}>
                <Text style={styles.exitText}>Sair</Text>
-            </Pressable>
+            </Pressable>*/}
          </View>
       </View>
    );
@@ -127,25 +163,21 @@ export default function Config() {
 
 const styles = StyleSheet.create({
    container: {
-      marginHorizontal: 20,
+      paddingHorizontal: 20,
    },
    title: {
       fontFamily: "Manrope_700Bold",
       fontSize: 12,
       marginBottom: 8,
-      color: "#737780",
       marginTop: 20,
    },
    button: {
-      backgroundColor: "#FFDAD6",
       marginTop: 24,
       paddingVertical: 16,
       borderRadius: 12,
       alignItems: "center",
-      // justifyContent: "center",
    },
    exitText: {
-      color: "#BA1A1A",
       fontSize: 16,
       fontFamily: "Manrope_700Bold",
    },
@@ -169,13 +201,11 @@ const styles = StyleSheet.create({
    versionText: {
       fontFamily: "Manrope_400Regular",
       fontSize: 16,
-      color: "#737780",
    },
    aboutCardContent: {
       justifyContent: "space-between",
       flexDirection: "row",
       borderBottomWidth: 1,
-      borderBottomColor: "#E0E0E0",
       paddingBottom: 8,
    },
 });

@@ -4,27 +4,48 @@ import { ScrollView } from "react-native-gesture-handler";
 import Card from "@/components/ui/Card";
 import { NotificationList } from "@/components/Notifications";
 import { MOCK_NOTIFICATIONS } from "@/constants/mockNotifications";
+import { useTheme } from "@/context";
 
 export default function AlertsScreen() {
+   const { colors } = useTheme();
    const [alerts, setAlerts] = useState(false);
 
    return (
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+         style={[styles.scrollView, { backgroundColor: colors.background }]}
+      >
          <View style={styles.container}>
-            <Text style={styles.textHeader}>Alertas</Text>
-            <Text style={styles.textContent}>
+            <Text style={[styles.textHeader, { color: colors.primaryDark }]}>
+               Alertas
+            </Text>
+            <Text style={[styles.textContent, { color: colors.textSecondary }]}>
                Mantenha-se informado sobre as operações das balsas.
             </Text>
-            <Card style={styles.button}>
-               <Text style={styles.buttonText}>
+            <Card
+               style={[
+                  styles.button,
+                  { backgroundColor: colors.surfaceVariant },
+               ]}
+            >
+               <Text style={[styles.buttonText, { color: colors.text }]}>
                   Receber alertas em tempo real
                </Text>
-               <Switch onValueChange={setAlerts} value={alerts} />
+               <Switch
+                  onValueChange={setAlerts}
+                  value={alerts}
+                  trackColor={{
+                     false: colors.switchTrack,
+                     true: colors.primary,
+                  }}
+                  thumbColor={colors.switchThumb}
+               />
             </Card>
 
             {/* Seção de Notificações Novo Sistema */}
             <View style={styles.notificationsSection}>
-               <Text style={styles.sectionTitle}>
+               <Text
+                  style={[styles.sectionTitle, { color: colors.primaryDark }]}
+               >
                   Notificações em Tempo Real
                </Text>
                <NotificationList notifications={MOCK_NOTIFICATIONS} />
@@ -37,7 +58,6 @@ export default function AlertsScreen() {
 const styles = StyleSheet.create({
    scrollView: {
       paddingHorizontal: 20,
-      backgroundColor: "#F8F9FA",
    },
    container: {
       flexDirection: "column",
@@ -47,24 +67,20 @@ const styles = StyleSheet.create({
    textHeader: {
       fontFamily: "Manrope_700Bold",
       fontSize: 24,
-      color: "#001E40",
    },
    textContent: {
       fontFamily: "Manrope_400Regular",
       fontSize: 16,
-      color: "#43474F",
    },
    button: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       marginTop: 16,
-      backgroundColor: "#EBEBEB",
    },
    buttonText: {
       fontFamily: "Manrope_600Bold",
       fontSize: 14,
-      color: "#191C1D",
    },
    alertCard: {
       // alignItems: "center",
@@ -77,7 +93,6 @@ const styles = StyleSheet.create({
    sectionTitle: {
       fontFamily: "Manrope_700Bold",
       fontSize: 18,
-      color: "#001E40",
       marginBottom: 12,
    },
 });

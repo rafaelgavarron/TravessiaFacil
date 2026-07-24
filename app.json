@@ -1,38 +1,43 @@
 {
-  "expo": {
-    "name": "TravessiaFacil",
-    "slug": "TravessiaFacil",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "scheme": "travessiafacil",
-    "experiments": {
-      "typedRoutes": true
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.wydune.TravessiaFacil"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+   "expo": {
+      "name": "Travessias",
+      "slug": "Travessias",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "icon": "assets/icone.png",
+      "userInterfaceStyle": "auto",
+      "scheme": "travessiafacil",
+      "experiments": {
+         "typedRoutes": true
       },
-      "predictiveBackGestureEnabled": false,
-      "package": "com.wydune.TravessiaFacil"
-    },
-    "web": {
-      "bundler": "metro",
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-status-bar",
-      "expo-splash-screen",
-      "expo-font"
-    ]
-  }
+      "ios": {
+         "supportsTablet": true,
+         "bundleIdentifier": "com.wydune.TravessiaFacil"
+      },
+      "android": {
+         "adaptiveIcon": {
+            "backgroundColor": "#a5bfe7"
+         },
+         "predictiveBackGestureEnabled": false,
+         "package": "com.wydune.TravessiaFacil"
+      },
+      "web": {
+         "bundler": "metro",
+         "favicon": "./assets/favicon.png"
+      },
+      "plugins": [
+         "expo-router",
+         "expo-status-bar",
+         [
+            "expo-splash-screen",
+            {
+               "backgroundColor": "#a5bfe7",
+               "image": "./assets/icone.png",
+               "imageWidth": 200,
+               "resizeMode": "contain"
+            }
+         ],
+         "expo-font"
+      ]
+   }
 }

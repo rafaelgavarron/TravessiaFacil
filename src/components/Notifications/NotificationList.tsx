@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Notification } from '@/types/notification';
 import { NotificationCard } from './NotificationCard';
+import { useTheme } from "@/context";
 
 interface NotificationListProps {
   notifications: Notification[];
@@ -14,10 +15,12 @@ export const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
   paddingHorizontal = 0,
 }) => {
+  const { colors } = useTheme();
+
   if (notifications.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Nenhuma notificação no momento</Text>
+        <Text style={[styles.emptyText, { color: colors.textMuted }]}>Nenhuma notificação no momento</Text>
       </View>
     );
   }
@@ -42,7 +45,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#9CA3AF',
     fontWeight: '500',
   },
 });

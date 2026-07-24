@@ -1,6 +1,8 @@
 import { Text, StyleSheet, StyleProp, ViewStyle, View } from "react-native";
 import Card from "@/components/ui/Card";
 import React from "react";
+import { useTheme } from "@/context";
+
 export default function AlertCard({
    category,
    title,
@@ -12,25 +14,42 @@ export default function AlertCard({
    style?: StyleProp<ViewStyle>;
    children?: React.ReactNode;
 }) {
+   const { colors } = useTheme();
    return (
-      <Card style={[styles.Card, style]}>
+      <Card
+         style={[
+            styles.Card,
+            { backgroundColor: colors.dangerBg },
+            style,
+         ]}
+      >
          <View style={styles.infoContainer}>
-            <Text style={styles.categoryText}>
+            <Text
+               style={[
+                  styles.categoryText,
+                  {
+                     color: colors.danger,
+                     backgroundColor: colors.dangerBg,
+                  },
+               ]}
+            >
                "icon"
                {category}
             </Text>
-            <Text style={styles.titleText}>{title}</Text>
+            <Text style={[styles.titleText, { color: colors.text }]}>
+               {title}
+            </Text>
             <View>{children}</View>
          </View>
       </Card>
    );
 }
+
 const styles = StyleSheet.create({
    Card: {
       width: "100%",
       height: 128,
       marginTop: 20,
-      backgroundColor: "#f1d",
    },
    categoryText: {
       fontFamily: "Manrope_700Bold",
@@ -40,16 +59,12 @@ const styles = StyleSheet.create({
       marginLeft: 5,
       alignSelf: "center",
       fontSize: 12,
-      color: "#BA1A1A",
-      backgroundColor: "#FFDAD6",
    },
    titleText: {
       fontFamily: "Manrope_600SemiBold",
       fontSize: 15,
-      color: "#191C1D",
    },
    infoContainer: {
       flexDirection: "column",
-      // alignItems: "center",
    },
 });

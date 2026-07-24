@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTheme } from "@/context";
 
 interface CardMetricaProps {
    // Tipagem flexível para aceitar componentes de ícone comuns (Lucide, Vector Icons, etc)
@@ -13,29 +14,40 @@ export function CardMetrica({
    titulo,
    valor,
 }: CardMetricaProps) {
+   const { colors } = useTheme();
    return (
-      <View style={styles.card}>
+      <View
+         style={[
+            styles.card,
+            {
+               backgroundColor: colors.surface,
+               shadowColor: colors.shadow,
+            },
+         ]}
+      >
          {/* Renderiza o ícone passado por prop se ele existir */}
          {IconeComponente && (
             <View style={styles.containerIcone}>
-               <IconeComponente size={24} color="#64748b" />
+               <IconeComponente size={24} color={colors.textSecondary} />
             </View>
          )}
 
-         <Text style={styles.titulo}>{titulo.toUpperCase()}</Text>
-         <Text style={styles.valor}>{valor}</Text>
+         <Text style={[styles.titulo, { color: colors.textSecondary }]}>
+            {titulo.toUpperCase()}
+         </Text>
+         <Text style={[styles.valor, { color: colors.primaryDark }]}>
+            {valor}
+         </Text>
       </View>
    );
 }
 
 const styles = StyleSheet.create({
    card: {
-      backgroundColor: "#fff",
       borderRadius: 16,
       padding: 16,
       minWidth: 140,
       flex: 1, // Permite que eles fiquem alinhados lado a lado proporcionalmente
-      shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
       shadowRadius: 3,
@@ -48,13 +60,11 @@ const styles = StyleSheet.create({
    titulo: {
       fontSize: 12,
       fontWeight: "600",
-      color: "#64748b",
       letterSpacing: 0.5,
       marginBottom: 4,
    },
    valor: {
       fontSize: 24,
       fontWeight: "bold",
-      color: "#0f172a",
    },
 });
